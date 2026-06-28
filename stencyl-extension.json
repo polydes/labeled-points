@@ -13,7 +13,12 @@
 
   "icon": "icon.png",
 
+  "engine": {
+    "root": "engine"
+  },
+
   "toolset": {
+    "root": "toolset",
     "src": [
       {"type": "java", "path": "src"},
       {"type": "res", "path": "res", "target": "res/com/polydes/points"}
