@@ -55,7 +55,8 @@ public class PointsExtension extends GameExtension
 
 	@Override
 	protected void onSave() {
-		pointEditorPanel.onSave();
+		if(pointEditorPanel != null)
+			pointEditorPanel.onSave();
 		super.onSave();
 	}
 
