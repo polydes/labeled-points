@@ -10,30 +10,23 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.WindowConstants;
 
-import com.polydes.common.comp.MiniSplitPane;
 import com.polydes.points.PointsExtension;
 
-import stencyl.sw.SW;
+import stencyl.app.comp.MiniSplitPane;
+import stencyl.app.main.MainWindow;
 
 public class PointEditorWindow extends JDialog
 {
-	private static PointEditorWindow _instance;
-	
-	public static PointEditorWindow get()
-	{
-		if(_instance == null)
-			_instance = new PointEditorWindow();
-		
-		return _instance;
-	}
-	
+	private final PointsExtension ext;
 	private MiniSplitPane splitPane;
 	private JPanel contents;
 	private boolean initialized;
+	private PointEditorPage editorPage;
 	
-	public PointEditorWindow()
+	public PointEditorWindow(PointsExtension ext)
 	{
-		super(SW.get(), "Point Editor", true);
+		super(MainWindow.get(), "Point Editor", true);
+		this.ext = ext;
 		
 		contents = new JPanel(new BorderLayout());
 		
@@ -79,17 +72,28 @@ public class PointEditorWindow extends JDialog
 		initialized = true;
 		
 		Rectangle r = PointsExtension.pointWindowPos;
-		
-		splitPane.setLeftComponent(PointEditorPage.get().getSidebar());
-		splitPane.setRightComponent(PointEditorPage.get());
+
+		if(editorPage == null)
+		{
+			editorPage = new PointEditorPage(ext);
+		}
+
+		splitPane.setLeftComponent(editorPage.getSidebar());
+		splitPane.setRightComponent(editorPage);
 		splitPane.setDividerLocation(PointsExtension.pointWindowSideWidth);
 		
 		setSize(r.width, r.height);
 		
 		if(r.x == -1 || r.y == -1)
-			setLocationRelativeTo(SW.get());
+			setLocationRelativeTo(MainWindow.get());
 		else
 			setLocation(r.x, r.y);
+	}
+
+	public void onSave()
+	{
+		if(editorPage != null)
+			editorPage.save();
 	}
 	
 	@Override
@@ -97,17 +101,13 @@ public class PointEditorWindow extends JDialog
 	{
 		splitPane.removeAll();
 		contents.removeAll();
-		
-		super.dispose();
-	}
-	
-	public static void disposeWindow()
-	{
-		if(_instance != null)
+
+		if(editorPage != null)
 		{
-			_instance.setVisible(false);
-			_instance.dispose();
-			_instance = null;
+			editorPage.dispose();
+			editorPage = null;
 		}
+
+		super.dispose();
 	}
 }

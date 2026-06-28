@@ -21,6 +21,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -51,33 +52,25 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
-import org.apache.commons.io.FileUtils;
-
-import com.jidesoft.swing.PaintPanel;
-import com.polydes.common.comp.StatusBar;
-import com.polydes.common.comp.UpdatingCombo;
-import com.polydes.common.res.ResourceLoader;
-import com.polydes.common.res.Resources;
 import com.polydes.points.NamedPoint;
 import com.polydes.points.PointsExtension;
 import com.polydes.points.comp.CyclingSpinnerListModel;
-
-import stencyl.core.engine.actor.IActorType;
-import stencyl.core.lib.Game;
-import stencyl.core.lib.Resource;
-import stencyl.sw.SW;
-import stencyl.sw.data.EditableAnimation;
-import stencyl.sw.lnf.Theme;
-import stencyl.sw.util.UI;
-import stencyl.sw.util.comp.GroupButton;
-import stencyl.sw.util.comp.GroupToggleButton;
+import stencyl.app.comp.*;
+import stencyl.app.ext.res.AppResourceLoader;
+import stencyl.app.ext.res.AppResources;
+import stencyl.app.lnf.Fonts;
+import stencyl.app.lnf.Theme;
+import stencyl.core.SWC;
+import stencyl.core.lib.resource.Resource;
+import stencyl.sw.core.lib.actortype.IActorType;
+import stencyl.sw.core.lib.animation.EditableAnimation;
 
 public class PointEditorPage extends JPanel
 {
-	private static Resources res = ResourceLoader.getResources("com.polydes.points");
+	private static AppResources res = AppResourceLoader.getResources("com.polydes.points");
 	
-	private static PointEditorPage _instance;
-	
+	private PointsExtension ext;
+
 	// Sidebar
 	
 	private JPanel sidebar;
@@ -111,20 +104,13 @@ public class PointEditorPage extends JPanel
 	private JScrollPane scroller;
 	private JPanel page;
 	
-	public static PointEditorPage get()
-	{
-		if (_instance == null)
-			_instance = new PointEditorPage();
-		
-		return _instance;
-	}
-	
 	private static final List<EditableAnimation> noAnims = new ArrayList<EditableAnimation>();
 	
-	public PointEditorPage()
+	public PointEditorPage(PointsExtension ext)
 	{
 		super(new BorderLayout());
-		
+		this.ext = ext;
+
 		actorTypeFilter = new JTextField();
 		actorTypeFilter.getDocument().addDocumentListener(new DocumentListener()
 		{
@@ -142,7 +128,7 @@ public class PointEditorPage extends JPanel
 			@Override public void changedUpdate(DocumentEvent e){ update(); }
 		});
 		
-		actorTypeChooser = new UpdatingCombo<IActorType>(Game.getGame().getResources().getResourcesByType(IActorType.class), null);
+		actorTypeChooser = new UpdatingCombo<>(ext.getProject().getResources().getResources(IActorType.class), null);
 		actorTypeChooser.setBackground(null);
 		actorTypeChooser.addActionListener(new ActionListener()
 		{
@@ -682,7 +668,7 @@ public class PointEditorPage extends JPanel
 	private JLabel label(String text)
 	{
 		JLabel label = new JLabel(text);
-		label.setFont(SW.get().getFonts().getBoldFont());
+		label.setFont(SWC.get(Fonts.class).getBoldFont());
 		label.setForeground(Color.WHITE);
 		
 		return label;
@@ -751,13 +737,13 @@ public class PointEditorPage extends JPanel
 	
 	private void loadPoints(Resource r)
 	{
-		File f = PointsExtension.get().getExtrasFolder();
+		File f = ext.getExtrasFolder();
 		File rf = new File(f, r.getID() + ".txt");
 		if(rf.exists())
 		{
 			try
 			{
-				List<String> lines = FileUtils.readLines(rf);
+				List<String> lines = Files.readAllLines(rf.toPath());
 				for(String s : lines)
 				{
 					if(s.isEmpty())
@@ -782,7 +768,7 @@ public class PointEditorPage extends JPanel
 	
 	private void savePoints(Resource r)
 	{
-		File f = PointsExtension.get().getExtrasFolder();
+		File f = ext.getExtrasFolder();
 		if(!f.exists())
 			f.mkdirs();
 		
@@ -792,7 +778,7 @@ public class PointEditorPage extends JPanel
 			List<String> lines = new ArrayList<String>();
 			for(NamedPoint p : displayedPoints)
 				lines.add(NamedPoint.toKeyValue(p));
-			FileUtils.writeLines(rf, lines);
+			Files.write(rf.toPath(), lines);
 		}
 		catch (IOException e)
 		{
@@ -800,21 +786,17 @@ public class PointEditorPage extends JPanel
 		}
 	}
 	
-	public static void save()
+	public void save()
 	{
-		if(_instance != null && _instance.dirty)
-			_instance.savePoints(_instance.actorTypeChooser.getSelected());
+		if(dirty)
+			savePoints(actorTypeChooser.getSelected());
 	}
 	
-	public static void dispose()
+	public void dispose()
 	{
-		if(_instance != null)
-		{
-			save();
-			_instance.actorTypeChooser.dispose();
-			_instance.animationChooser.dispose();
-		}
-		_instance = null;
+		save();
+		actorTypeChooser.dispose();
+		animationChooser.dispose();
 	}
 
 	private class Toolbar extends JPanel
@@ -831,7 +813,7 @@ public class PointEditorPage extends JPanel
 		{
 			super(new BorderLayout());
 			
-			PaintPanel b = UI.createButtonPanel
+			JPanel b = UI.createButtonPanel
 			(
 				BorderFactory.createCompoundBorder(
 					BorderFactory.createMatteBorder(0, 0, 1, 0, Theme.BORDER_COLOR),
@@ -900,11 +882,8 @@ public class PointEditorPage extends JPanel
 		
 		public static JComponent createHeader(String text)
 		{
-			PaintPanel header = new PaintPanel();
-			header.setVertical(true);
-			header.setStartColor(Theme.BUTTON_BAR_START);
-			header.setEndColor(Theme.BUTTON_BAR_END);
-			
+			FlatPaintPanel header = new FlatPaintPanel(FlatPaintPanel.BUTTON_BAR, FlatPaintPanel.VERTICAL);
+
 			header.setPreferredSize(new Dimension(1, 20));
 			
 			JLabel label = new JLabel(text);
