@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<palette>
+	
+	<block
+		tag="pts-get-for-actor"
+		spec="get point %1 for actor %0"
+		code='PointsExtension.getPointForActor(~, ~)'
+		type="normal"
+		color="green"
+		returns="anything">
+
+		<fields>
+			<actor order="0"></actor>
+			<text order="1"></text>
+		</fields>
+		
+	</block>
+
+	<block
+		tag="pts-get-all-for-actor"
+		spec="get all points for actor %0"
+		code='PointsExtension.getPointsForActor(~)'
+		type="normal"
+		color="green"
+		returns="list">
+
+		<fields>
+			<actor order="0"></actor>
+		</fields>
+		
+	</block>
+
+	<block
+		tag="pts-loop-point"
+		spec="point"
+		code='curPoint'
+		type="normal"
+		color="green"
+		returns="anything"
+		hidden="true">
+
+		<fields />
+		
+	</block>
+
+	<block
+		tag="pts-loop-for-actor"
+		spec="loop over points for actor %0 - %1"
+		code='PointsExtension.loopPointsForActor(~, function(~:nme.geom.Point) {~});'
+		type="wrapper"
+		color="green"
+		returns="void">
+
+		<fields>
+			<actor order="0"></actor>
+			<attached-block order="1" tag="pts-loop-point"></attached-block>
+			<code_block order="2"></code_block>
+		</fields>
+		
+	</block>
+
+	<block
+		tag="pts-xy-of-point"
+		spec="%1 of %0"
+		code='~.~'
+		type="normal"
+		color="green"
+		returns="number">
+
+		<fields>
+			<anything order="0"></anything>
+			<dropdown order="1">
+				<choices>
+					<c text="x" code="x"></c>
+					<c text="y" code="y"></c>
+				</choices>
+			</dropdown>
+		</fields>
+		
+	</block>
+
+</palette>

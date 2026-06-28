@@ -9,12 +9,13 @@
   "website": "https://www.polydes.com/repo/toolset/com.polydes.points",
   "repository": "https://www.polydes.com/repo",
   "target": "stencyl-4.2.0",
-  "version": "0.1.0",
+  "version": "1.0.0",
 
   "icon": "icon.png",
 
   "engine": {
-    "root": "engine"
+    "root": "engine",
+    "compatibility": "all"
   },
 
   "toolset": {
