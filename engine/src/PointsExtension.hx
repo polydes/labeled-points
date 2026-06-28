@@ -8,7 +8,7 @@ import com.stencyl.models.Resource;
 import com.stencyl.Data;
 import com.stencyl.Engine;
 
-import nme.geom.Point;
+import openfl.geom.Point;
 
 class PointsExtension
 {
@@ -64,7 +64,7 @@ class PointsExtension
 
 	private static function loadRid(id:Int):Void
 	{
-		var smap:Map<String, String> = getFileKeyValues("assets/data/PointsExtension/" + id + ".txt");
+		var smap:Map<String, String> = getFileKeyValues("assets/data/com.polydes.points/" + id + ".txt");
 		var map:Map<String, Point> = new Map<String, Point>();
 		for(key in smap.keys())
 		{

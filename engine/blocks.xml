@@ -46,7 +46,7 @@
 	<block
 		tag="pts-loop-for-actor"
 		spec="loop over points for actor %0 - %1"
-		code='PointsExtension.loopPointsForActor(~, function(~:nme.geom.Point) {~});'
+		code='PointsExtension.loopPointsForActor(~, function(~:openfl.geom.Point) {~});'
 		type="wrapper"
 		color="green"
 		returns="void">
@@ -54,7 +54,7 @@
 		<fields>
 			<actor order="0"></actor>
 			<attached-block order="1" tag="pts-loop-point"></attached-block>
-			<code_block order="2"></code_block>
+			<code-block order="2"></code-block>
 		</fields>
 		
 	</block>
