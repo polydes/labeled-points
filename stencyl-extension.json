@@ -1,0 +1,27 @@
+{
+  "group": "com.polydes",
+  "id": "com.polydes.points",
+  "name": "Points Extension",
+  "description": "Place points on Actor Types and refer to them in-game.",
+  "tags": ["workflow"],
+  "type": "game",
+  "author": "Justin Espedal",
+  "website": "https://www.polydes.com/repo/toolset/com.polydes.points",
+  "repository": "https://www.polydes.com/repo",
+  "target": "stencyl-4.2.0",
+  "version": "0.1.0",
+
+  "icon": "icon.png",
+
+  "toolset": {
+    "src": [
+      {"type": "java", "path": "src"},
+      {"type": "res", "path": "res", "target": "res/com/polydes/points"}
+    ],
+    "dependencies": [
+      "platform:ch.qos.reload4j:reload4j"
+    ],
+    "mainClass": "com.polydes.points.PointsExtension",
+    "internalVersion": "1"
+  }
+}
