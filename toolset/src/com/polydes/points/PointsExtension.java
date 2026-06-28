@@ -2,17 +2,17 @@ package com.polydes.points;
 
 import java.awt.Rectangle;
 
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 
-import com.polydes.points.app.PointEditorPage;
-import com.polydes.points.app.PointEditorWindow;
+import com.polydes.points.app.PointEditorPanel;
+import stencyl.app.ext.PageAddon;
 import stencyl.core.ext.GameExtension;
 import stencyl.core.ext.engine.ExtensionInstanceManager.FormatUpdateSubmitter;
-import stencyl.sw.app.main.Menu;
+import stencyl.sw.app.center.GameLibrary;
 
 public class PointsExtension extends GameExtension
 {
-	private PointEditorWindow window;
+	private PointEditorPanel pointEditorPanel;
 	
 	public static Rectangle pointWindowPos;
 	public static int pointWindowSideWidth;
@@ -29,29 +29,21 @@ public class PointsExtension extends GameExtension
 		);
 		pointWindowSideWidth = readIntProp("pointwindow.sidewidth", 265);
 
-		owner().getAddons().setAddon(Menu.EXTENSIONS_MENU_ADDON, new Menu.ExtensionMenuAddon(this){
+		owner().getAddons().setAddon(GameLibrary.DASHBOARD_SIDEBAR_PAGE_ADDONS, new PageAddon.ExtensionPageAddon(this){
 			@Override
-			protected void actionPerformed() {
-				if(window == null)
-					window = new PointEditorWindow(PointsExtension.this);
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						window.setVisible(true);
-					}
-				});
+			public JPanel getPage() {
+				if(pointEditorPanel == null)
+					pointEditorPanel = new PointEditorPanel(PointsExtension.this);
+				return pointEditorPanel;
 			}
 		});
 	}
 
 	@Override
 	protected void onUnload() {
-		if(window != null)
+		if(pointEditorPanel != null)
 		{
-			window.setVisible(false);
-			window.dispose();
+			pointEditorPanel.close();
 		}
 		putProp("pointwin.x", pointWindowPos.x);
 		putProp("pointwin.y", pointWindowPos.y);
@@ -63,7 +55,7 @@ public class PointsExtension extends GameExtension
 
 	@Override
 	protected void onSave() {
-		window.onSave();
+		pointEditorPanel.onSave();
 		super.onSave();
 	}
 

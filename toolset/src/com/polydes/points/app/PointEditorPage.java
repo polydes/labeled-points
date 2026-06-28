@@ -26,24 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollBar;
-import javax.swing.JScrollPane;
-import javax.swing.JSpinner;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.SwingConstants;
+import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
@@ -129,7 +112,6 @@ public class PointEditorPage extends JPanel
 		});
 		
 		actorTypeChooser = new UpdatingCombo<>(ext.getProject().getResources().getResources(IActorType.class), null);
-		actorTypeChooser.setBackground(null);
 		actorTypeChooser.addActionListener(new ActionListener()
 		{
 			private IActorType current;
@@ -158,7 +140,17 @@ public class PointEditorPage extends JPanel
 		});
 		
 		animationChooser = new UpdatingCombo<EditableAnimation>(noAnims, null);
-		animationChooser.setBackground(null);
+		animationChooser.setRenderer(new DefaultListCellRenderer(){
+			@Override
+			public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+				super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+				if(value instanceof EditableAnimation anim)
+					setText(anim.getName());
+				else
+					setText("");
+				return this;
+			}
+		});
 		animationChooser.addActionListener(new ActionListener()
 		{
 			@Override
@@ -884,7 +876,7 @@ public class PointEditorPage extends JPanel
 		{
 			FlatPaintPanel header = new FlatPaintPanel(FlatPaintPanel.BUTTON_BAR, FlatPaintPanel.VERTICAL);
 
-			header.setPreferredSize(new Dimension(1, 20));
+//			header.setPreferredSize(new Dimension(1, 20));
 			
 			JLabel label = new JLabel(text);
 			label.setHorizontalAlignment(SwingConstants.CENTER);
