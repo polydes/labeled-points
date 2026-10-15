@@ -19,9 +19,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
@@ -44,6 +44,7 @@ import stencyl.app.ext.res.AppResources;
 import stencyl.app.lnf.Fonts;
 import stencyl.app.lnf.Theme;
 import stencyl.core.SWC;
+import stencyl.core.io.Files2;
 import stencyl.core.lib.resource.Resource;
 import stencyl.sw.core.lib.actortype.IActorType;
 import stencyl.sw.core.lib.animation.EditableAnimation;
@@ -729,13 +730,13 @@ public class PointEditorPage extends JPanel
 	
 	private void loadPoints(Resource r)
 	{
-		File f = ext.getExtrasFolder();
-		File rf = new File(f, r.getID() + ".txt");
-		if(rf.exists())
+		Path f = ext.getExtrasFolder();
+		Path rf = f.resolve(r.getID() + ".txt");
+		if(Files.exists(rf))
 		{
 			try
 			{
-				List<String> lines = Files.readAllLines(rf.toPath());
+				List<String> lines = Files.readAllLines(rf);
 				for(String s : lines)
 				{
 					if(s.isEmpty())
@@ -760,17 +761,17 @@ public class PointEditorPage extends JPanel
 	
 	private void savePoints(Resource r)
 	{
-		File f = ext.getExtrasFolder();
-		if(!f.exists())
-			f.mkdirs();
+		Path f = ext.getExtrasFolder();
+		if(!Files.exists(f))
+			Files2.mkdirs(f);
 		
-		File rf = new File(f, r.getID() + ".txt");
+		Path rf = f.resolve(r.getID() + ".txt");
 		try
 		{
 			List<String> lines = new ArrayList<String>();
 			for(NamedPoint p : displayedPoints)
 				lines.add(NamedPoint.toKeyValue(p));
-			Files.write(rf.toPath(), lines);
+			Files.write(rf, lines);
 		}
 		catch (IOException e)
 		{
