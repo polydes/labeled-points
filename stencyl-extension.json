@@ -8,8 +8,8 @@
   "author": "Justin Espedal",
   "website": "https://www.polydes.com/repo/extensions/com.polydes.points",
   "repository": "https://www.polydes.com/repo",
-  "target": "stencyl-4.2.0",
-  "version": "1.1.0",
+  "target": "stencyl-4.3.0",
+  "version": "1.2.0",
 
   "icon": "icon.png",
 
